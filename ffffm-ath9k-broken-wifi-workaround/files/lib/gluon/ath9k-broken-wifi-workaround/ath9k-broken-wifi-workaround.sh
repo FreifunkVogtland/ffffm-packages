@@ -142,12 +142,15 @@ fi
 # Check if there are client connectivity to this node
 CLIENTCONNECTION=0
 
-if iw dev client0 station dump | grep Station 2>&1
-then
-	CLIENTCONNECTION=1
-	touch $CLIENTFILE
-# 	systemlog "Found client connectivity"
-fi
+
+for i in $(seq 0 2); do
+	if iw dev client$i station dump | grep Station 2>&1
+	then
+		CLIENTCONNECTION=1
+		touch $CLIENTFILE
+	# 	systemlog "Found client connectivity"
+	fi
+done
 
 ######################################################################################
 # Check private wifi connectivity (private wifi lost)
@@ -156,12 +159,15 @@ fi
 # Check if there are privat wifi connectivity to this node
 PRIVATECONNECTION=0
 
-if iw dev wlan0-1 station dump | grep Station 2>&1
-then
-	PRIVATECONNECTION=1
-	touch $PRIVATEFILE
-# 	systemlog "Found private device connectivity"
-fi
+
+for i in $(seq 0 2); do
+	if iw dev wlan$i-1 station dump | grep Station 2>&1
+	then
+		PRIVATECONNECTION=1
+		touch $PRIVATEFILE
+	# 	systemlog "Found private device connectivity"
+	fi
+done
 
 ######################################################################################
 # Check ibss0 mesh connection (mesh lost)
@@ -169,12 +175,21 @@ fi
 
 # Check for an active ibss0 mesh
 MESHCONNECTION=0
-if iw dev ibss0 station dump | grep Station 2>&1
-then
-	MESHCONNECTION=1
-	touch $MESHFILE
-# 	systemlog "Found a mesh"
-fi
+for i in $(seq 0 2); do
+	if iw dev ibss$i station dump | grep Station 2>&1
+	then
+		MESHCONNECTION=1
+		touch $MESHFILE
+	# 	systemlog "Found a mesh"
+	fi
+
+	if iw dev mesh$i station dump | grep Station 2>&1
+	then
+		MESHCONNECTION=1
+		touch $MESHFILE
+	# 	systemlog "Found a mesh"
+	fi
+done
 
 ######################################################################################
 # Check gateway connection (uplink lost)
